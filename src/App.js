@@ -1,26 +1,53 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { BrowserRouter, Route } from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import './App.css';
+import Todos from './components/Todos';
+import FarwardRefs from './components/ref';
+import  updateUser  from './actions/user-actions';
+import {pageOne, pageTwo} from './components/routerPage';
+import middleware from './components/middleware';
+
+class App extends React.Component{
+  constructor(props){
+    super(props);
+    this.onUserUpdate = this.onUserUpdate.bind(this);
+  }
+  onUserUpdate(e){
+    this.props.onUserUpdate(e.target.value);
+  }
+  render(){
+    return (
+      <div>
+      <h1> React router</h1>
+        <BrowserRouter>
+          <Route path="/" exact component={pageOne} />
+          <Route path="/pagetwo" exact component={pageTwo} />
+          <Route path="/middle" exact component={middleware} />
+          {/* <Route path="/" exact component={FarwardRefs} />
+          <Route path="/todos" component={Todos} /> */}
+
+        </BrowserRouter>
+
+          <input type="text" onChange={(e) => this.onUserUpdate(e)} />
+          See my username {this.props.user}
+        </div>
+    );
+  }
+}
+const mapStateToProps = state => {
+    return {
+      products:state.products,
+      user:state.user
+    }
 }
 
-export default App;
+const mapActionsToProps =(dispatch,props) => {
+  return bindActionCreators({onUserUpdate:updateUser},dispatch);
+}
+
+
+export default connect(mapStateToProps,mapActionsToProps)(App);
+
